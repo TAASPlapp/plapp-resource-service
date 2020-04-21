@@ -23,5 +23,11 @@ def upload():
 def serve(path):
     return app.send_static_file(path)
 
+@app.after_request
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    return response
+    
 if __name__ == '__main__':
     app.run()
