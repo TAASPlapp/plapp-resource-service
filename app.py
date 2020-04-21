@@ -32,7 +32,7 @@ def upload():
     file.save(os.path.join('assets', filename))
     path = f'https://plapp-resource-service.herokuapp.com/assets/{filename}'
     print(f'Saved file to: {path}')
-    return path
+    return jsonify(path)
 
 @app.route('/assets/<path:path>', methods=['GET'])
 def serve(path):
