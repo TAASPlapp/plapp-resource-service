@@ -7,6 +7,7 @@ def ensure_dir(dirname):
     dirname = Path(dirname)
     if not dirname.is_dir():
         dirname.mkdir(parents=True, exist_ok=False)
+ensure_dir('assets')
 
 app = Flask(__name__, static_folder='assets')
 
@@ -23,5 +24,4 @@ def serve(path):
     return app.send_static_file(path)
 
 if __name__ == '__main__':
-    ensure_dir('assets')
     app.run()
