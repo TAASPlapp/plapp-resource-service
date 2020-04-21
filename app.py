@@ -27,11 +27,12 @@ def upload():
     if request.method == "OPTIONS": # CORS preflight
         return _build_cors_prelight_response()
 
-    print(request.get_json())
     file = request.files['file']
     filename = str(uuid.uuid1())
     file.save(os.path.join('assets', filename))
-    return f'https://plapp-resource-service.herokuapp.com/assets/{filename}'
+    path = f'https://plapp-resource-service.herokuapp.com/assets/{filename}'
+    print(f'Saved file to: {path}')
+    return path
 
 @app.route('/assets/<path:path>', methods=['GET'])
 def serve(path):
