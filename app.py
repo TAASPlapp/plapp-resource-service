@@ -1,6 +1,6 @@
 import uuid
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from pathlib import Path
 
 def ensure_dir(dirname):
@@ -11,8 +11,22 @@ ensure_dir('assets')
 
 app = Flask(__name__, static_folder='assets')
 
+def _build_cors_prelight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
 @app.route('/', methods=['GET', 'POST', 'PUT'])
 def upload():
+    if request.method == "OPTIONS": # CORS preflight
+        return _build_cors_prelight_response()
+
     print(request.get_json())
     file = request.files['file']
     filename = str(uuid.uuid1())
@@ -21,6 +35,8 @@ def upload():
 
 @app.route('/assets/<path:path>', methods=['GET'])
 def serve(path):
+    if request.method == "OPTIONS": # CORS preflight
+        return _build_cors_prelight_response()
     return app.send_static_file(path)
 
 @app.after_request
@@ -28,6 +44,6 @@ def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response
-    
+
 if __name__ == '__main__':
     app.run()
